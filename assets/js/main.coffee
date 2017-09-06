@@ -26,29 +26,36 @@ writeUser = (studentNumber, paid, freeUses) ->
   return
 
 checkPaid = (studentNumber) ->
-  database.ref(studentNumber + '/Paid').once('value').then((snapshot) ->
-    if snapshot.val() == 'yes'
-      alert 'Legend'
-    else if snapshot.val() == 'no'
-      database.ref(studentNumber + '/FreeUses').once('value').then((snapshot) ->
-        if snapshot.val() == 0
-          firstUse = snapshot.val()
-          firstUse = 1
-          firstUpdate = {}
-          firstUpdate[studentNumber + '/FreeUses'] = firstUse
-          database.ref().update(firstUpdate)
-          alert 'This is your first free use'
-        else if snapshot.val() == 1
-          secondUse = snapshot.val()
-          secondUse = 2
-          secondUpdate = {}
-          secondUpdate[studentNumber + '/FreeUses'] = secondUse
-          database.ref().update(secondUpdate)
-          alert 'This is your last free use'
-        else
-          alert 'No remaining free uses'
+  database.ref(studentNumber).once('value').then((snapshot) ->
+    if snapshot.val() != null
+      database.ref(studentNumber + '/Paid').once('value').then((snapshot) ->
+        if snapshot.val() == 'yes'
+          alert 'Legend'
+        else if snapshot.val() == 'no'
+          database.ref(studentNumber + '/FreeUses').once('value').then((snapshot) ->
+            if snapshot.val() == 0
+              firstUse = snapshot.val()
+              firstUse = 1
+              firstUpdate = {}
+              firstUpdate[studentNumber + '/FreeUses'] = firstUse
+              database.ref().update(firstUpdate)
+              alert 'This is your first free use'
+            else if snapshot.val() == 1
+              secondUse = snapshot.val()
+              secondUse = 2
+              secondUpdate = {}
+              secondUpdate[studentNumber + '/FreeUses'] = secondUse
+              database.ref().update(secondUpdate)
+              alert 'This is your last free use'
+            else
+              alert 'No remaining free uses'
+            return
+          )
         return
       )
+    else
+      writeUser(studentNumber, 'no', 1)
+      alert 'This is your first free use'
     return
   )
   return
