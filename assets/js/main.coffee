@@ -11,16 +11,24 @@ formatStudentNumber = (studentNumber) ->
   return
 
 writeUser = (studentNumber, paid, freeUses) ->
-  database.ref(studentNumber).on('value', (snapshot) ->
+  database.ref(studentNumber).once('value').then((snapshot) ->
     if snapshot.val() != null
       updates = {}
       updates[studentNumber + '/Paid'] = paid
       database.ref().update(updates)
+      $('#addUserSuccess').slideDown()
+      setTimeout(->
+        $('#addUserSuccess').slideUp()
+      , 3000)
     else
       database.ref(studentNumber).set(
         Paid: paid
         FreeUses: freeUses
       )
+      $('#addUserSuccess').slideDown()
+      setTimeout(->
+        $('#addUserSuccess').slideUp()
+      , 3000)
     return
   )
   return
@@ -30,7 +38,10 @@ checkPaid = (studentNumber) ->
     if snapshot.val() != null
       database.ref(studentNumber + '/Paid').once('value').then((snapshot) ->
         if snapshot.val() == 'yes'
-          alert 'Legend'
+          $('#checkUserSuccess').slideDown()
+          setTimeout(->
+            $('#checkUserSuccess').slideUp()
+          , 3000)
         else if snapshot.val() == 'no'
           database.ref(studentNumber + '/FreeUses').once('value').then((snapshot) ->
             if snapshot.val() == 0
@@ -39,23 +50,34 @@ checkPaid = (studentNumber) ->
               firstUpdate = {}
               firstUpdate[studentNumber + '/FreeUses'] = firstUse
               database.ref().update(firstUpdate)
-              alert 'This is your first free use'
+              $('#checkUserFirst').slideDown()
+              setTimeout(->
+                $('#checkUserFirst').slideUp()
+              , 3000)
             else if snapshot.val() == 1
               secondUse = snapshot.val()
               secondUse = 2
               secondUpdate = {}
               secondUpdate[studentNumber + '/FreeUses'] = secondUse
               database.ref().update(secondUpdate)
-              alert 'This is your last free use'
+              $('#checkUserLast').slideDown()
+              setTimeout(->
+                $('#checkUserLast').slideUp()
+              , 3000)
             else
-              alert 'No remaining free uses'
+              $('#checkUserNo').slideDown()
+              setTimeout(->
+                $('#checkUserNo').slideUp()
+              , 3000)
             return
           )
         return
       )
     else
       writeUser(studentNumber, 'no', 1)
-      alert 'This is your first free use'
+      setTimeout(->
+        $('#checkUserFirst').slideUp()
+      , 3000)
     return
   )
   return
@@ -78,7 +100,10 @@ checkPaid = (studentNumber) ->
         writeUser(studentNumber, 'yes', 0)
         $('#addStudentNumber').val('')
       else
-        alert 'Wrong Password'
+        $('#wrongPassword').slideDown()
+        setTimeout(->
+          $('#wrongPassword').slideUp()
+        , 3000)
       $('#password').val('')
       return false
 

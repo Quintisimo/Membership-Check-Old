@@ -22,13 +22,27 @@ html
   body
     h1 Membership Check
   
-    form#checkUser
-      label Check if person has paid membership
-      input#checkStudentNumber(type='text', placeholder='Student Number', pattern='n[0-9]+', required)
-      input(type='submit', value='Submit')
+    #formWrapper
+      form#checkUser
+        label Check if person has paid membership
+        input#checkStudentNumber(type='text', placeholder='Student Number', pattern='n[0-9]+', required)
+        input(type='submit', value='Submit')
+        
+        .Messages
+          h1.success#checkUserSuccess Success
+          h1.failed#checkUserFirst This is your first free use
+          h1.failed#checkUserLast This is your last free use
+          h1.failed#checkUserNo No remaining free uses
+        
+      form#addUser
+        label Add paid member to database
+        input#addStudentNumber(type='text', placeholder='Student Number', pattern='n[0-9]+', required)
+        input#password(type='password', placeholder='Password', required)
+        input(type='submit', value='Submit')
+        
+        .Messages
+          h1.success#addUserSuccess Success
+          h1.failed#addUserFailed Failed
+          h1.failed#wrongPassword Wrong Password
       
-    form#addUser
-      label Add person to membership database
-      input#addStudentNumber(type='text', placeholder='Student Number', pattern='n[0-9]+', required)
-      input#password(type='password', placeholder='Password', required)
-      input(type='submit', value='Submit')
+    
