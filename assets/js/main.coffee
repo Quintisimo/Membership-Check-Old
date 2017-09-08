@@ -1,4 +1,5 @@
 database = firebase.database()
+date = new Date()
 
 formatStudentNumber = (studentNumber) ->
   studentNumber = studentNumber.replace(/\D/gi, '')
@@ -45,21 +46,17 @@ checkPaid = (studentNumber) ->
         else if snapshot.val() == 'no'
           database.ref(studentNumber + '/FreeUses').once('value').then((snapshot) ->
             if snapshot.val() == 0
-              firstUse = snapshot.val()
-              firstUse = 1
-              firstUpdate = {}
-              firstUpdate[studentNumber + '/FreeUses'] = firstUse
-              database.ref().update(firstUpdate)
+              firstUse = {}
+              firstUse[studentNumber + '/FreeUses'] = 1
+              database.ref().update(firstUse)
               $('#checkUserFirst').slideDown()
               setTimeout(->
                 $('#checkUserFirst').slideUp()
               , 3000)
             else if snapshot.val() == 1
-              secondUse = snapshot.val()
-              secondUse = 2
-              secondUpdate = {}
-              secondUpdate[studentNumber + '/FreeUses'] = secondUse
-              database.ref().update(secondUpdate)
+              secondUse = {}
+              secondUse[studentNumber + '/FreeUses'] = 2
+              database.ref().update(secondUse)
               $('#checkUserLast').slideDown()
               setTimeout(->
                 $('#checkUserLast').slideUp()
@@ -84,6 +81,9 @@ checkPaid = (studentNumber) ->
       , 3000)
     return
   )
+  dateTime = {}
+  dateTime[studentNumber + '/Attendence/' + date.toDateString()] = date.toLocaleTimeString()
+  database.ref().update(dateTime)
   return
 
 (($) ->
