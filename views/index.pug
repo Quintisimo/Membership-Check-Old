@@ -25,7 +25,7 @@ html
     #formWrapper
       form#checkUser
         label Check if person has paid membership
-        input#checkStudentNumber(type='text', placeholder='Student Number', pattern='n[0-9]+', required)
+        input#checkStudentNumber(type='text', placeholder='Student Number', pattern='[Nn][0-9]+', required)
         input(type='submit', value='Submit')
         
         .Messages
@@ -36,7 +36,7 @@ html
         
       form#addUser
         label Add paid member to database
-        input#addStudentNumber(type='text', placeholder='Student Number', pattern='n[0-9]+', required)
+        input#addStudentNumber(type='text', placeholder='Student Number', pattern='[Nn][0-9]+', required)
         input#password(type='password', placeholder='Password', required)
         input(type='submit', value='Submit')
         
