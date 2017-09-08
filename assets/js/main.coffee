@@ -74,7 +74,11 @@ checkPaid = (studentNumber) ->
         return
       )
     else
-      writeUser(studentNumber, 'no', 1)
+      database.ref(studentNumber).set(
+        Paid: 'no'
+        FreeUses: 1
+      )
+      $('#checkUserFirst').slideDown()
       setTimeout(->
         $('#checkUserFirst').slideUp()
       , 3000)
