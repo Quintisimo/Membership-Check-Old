@@ -1,5 +1,4 @@
 database = firebase.database()
-date = new Date()
 
 formatStudentNumber = (studentNumber) ->
   studentNumber = studentNumber.replace(/\D/gi, '')
@@ -81,6 +80,7 @@ checkPaid = (studentNumber) ->
       , 3000)
     return
   )
+  date = new Date()
   dateTime = {}
   dateTime[studentNumber + '/Attendence/' + date.toDateString()] = date.toLocaleTimeString()
   database.ref().update(dateTime)
