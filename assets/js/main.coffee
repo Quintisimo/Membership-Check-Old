@@ -80,10 +80,31 @@ checkPaid = (studentNumber) ->
       , 3000)
     return
   )
-  date = new Date()
-  dateTime = {}
-  dateTime[studentNumber + '/Attendence/' + date.toDateString()] = date.toLocaleTimeString()
-  database.ref().update(dateTime)
+  return
+
+dateTime = (studentNumber) ->
+  database.ref(studentNumber).once('value').then((snapshot) ->
+    if snapshot.val() != null
+      database.ref(studentNumber + '/Paid').once('value').then((snapshot) ->
+        if snapshot.val() == 'yes'
+          date = new Date()
+          dateTime = {}
+          dateTime[studentNumber + '/Attendence/' + date.toDateString()] = date.toLocaleTimeString()
+          database.ref().update(dateTime)
+        else if snapshot.val() == 'no'
+          database.ref(studentNumber + '/FreeUses').once('value').then((snapshot) ->
+            if snapshot.val() < 2
+              date = new Date()
+              dateTime = {}
+              dateTime[studentNumber + '/Attendence/' + date.toDateString()] = date.toLocaleTimeString()
+              database.ref().update(dateTime)
+            return
+          )
+
+        return
+      )
+    return
+  )
   return
 
 (($) ->
@@ -93,6 +114,7 @@ checkPaid = (studentNumber) ->
       studentNumber = $('#checkStudentNumber').val()
       studentNumber = formatStudentNumber(studentNumber)
       checkPaid(studentNumber)
+      dateTime(studentNumber)
       $('#checkStudentNumber').val('')
       return false
 
