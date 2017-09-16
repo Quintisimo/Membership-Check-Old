@@ -13,9 +13,7 @@ h1
 
 
 body
-  background-image: url("../img/background.svg")
-  background-position: center
-  background-repeat: no-repeat
+  bg('../img/background.svg', center)
   background-size: cover
 
 #formWrapper
@@ -27,7 +25,6 @@ body
   form
     display: block
     width: 100%
-
 
   label
     font-size: 30px
@@ -50,10 +47,10 @@ body
     color: white
 
   .Messages
-    position: relative
+    relative()
 
     h1
-      absolute: top 0px left 50%
+      absolute(top 0px left 50%)
       transform: translateX(-50%)
       padding: 10px
 
