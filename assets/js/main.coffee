@@ -1,4 +1,4 @@
-database = firebase.database()
+studentDatabase = firebase.database().ref()
 
 formatStudentNumber = (studentNumber) ->
   studentNumber = studentNumber.replace(/\D/gi, '')
@@ -10,44 +10,52 @@ formatStudentNumber = (studentNumber) ->
     alert 'Student Number is not valid'
   return
 
-writeUser = (studentNumber, paid, freeUses) ->
-  database.ref(studentNumber).once('value').then((snapshot) ->
+writeUser = (studentNumber, paid, freeUses, dialog) ->
+  student = studentDatabase.child(studentNumber)
+  student.once('value').then((snapshot) ->
     if snapshot.val() != null
       updates = {}
       updates[studentNumber + '/Paid'] = paid
-      database.ref().update(updates)
-      $('#addUserSuccess').slideDown()
-      setTimeout(->
-        $('#addUserSuccess').slideUp()
-      , 3000)
+      studentDatabase.update(updates)
+
+      if dialog == true
+        $('#addUserSuccess').slideDown()
+        setTimeout(->
+          $('#addUserSuccess').slideUp()
+        , 3000)
     else
-      database.ref(studentNumber).set(
+      student.set(
         Paid: paid
         FreeUses: freeUses
       )
-      $('#addUserSuccess').slideDown()
-      setTimeout(->
-        $('#addUserSuccess').slideUp()
-      , 3000)
+
+      if dialog == true
+        $('#addUserSuccess').slideDown()
+        setTimeout(->
+          $('#addUserSuccess').slideUp()
+        , 3000)
     return
   )
   return
 
 checkPaid = (studentNumber) ->
-  database.ref(studentNumber).once('value').then((snapshot) ->
+  student = studentDatabase.child(studentNumber)
+  studentPaid = student.child('Paid')
+  studentFreeUses = student.child('FreeUses')
+  student.once('value').then((snapshot) ->
     if snapshot.val() != null
-      database.ref(studentNumber + '/Paid').once('value').then((snapshot) ->
+      studentPaid.once('value').then((snapshot) ->
         if snapshot.val() == 'yes'
           $('#checkUserSuccess').slideDown()
           setTimeout(->
             $('#checkUserSuccess').slideUp()
           , 3000)
         else if snapshot.val() == 'no'
-          database.ref(studentNumber + '/FreeUses').once('value').then((snapshot) ->
+          studentFreeUses.once('value').then((snapshot) ->
             if snapshot.val() == 0
               firstUse = {}
               firstUse[studentNumber + '/FreeUses'] = 1
-              database.ref().update(firstUse)
+              studentDatabase.update(firstUse)
               $('#checkUserFirst').slideDown()
               setTimeout(->
                 $('#checkUserFirst').slideUp()
@@ -55,7 +63,7 @@ checkPaid = (studentNumber) ->
             else if snapshot.val() == 1
               secondUse = {}
               secondUse[studentNumber + '/FreeUses'] = 2
-              database.ref().update(secondUse)
+              studentDatabase.update(secondUse)
               $('#checkUserLast').slideDown()
               setTimeout(->
                 $('#checkUserLast').slideUp()
@@ -70,10 +78,7 @@ checkPaid = (studentNumber) ->
         return
       )
     else
-      database.ref(studentNumber).set(
-        Paid: 'no'
-        FreeUses: 1
-      )
+      writeUser(studentNumber, 'no', 1, false)
       $('#checkUserFirst').slideDown()
       setTimeout(->
         $('#checkUserFirst').slideUp()
@@ -83,24 +88,28 @@ checkPaid = (studentNumber) ->
   return
 
 dateTime = (studentNumber) ->
-  database.ref(studentNumber).once('value').then((snapshot) ->
+  student = studentDatabase.child(studentNumber)
+  studentPaid = student.child('Paid')
+  studentFreeUses = student.child('FreeUses')
+  student.once('value').then((snapshot) ->
+    console.log studentNumber
+    console.log snapshot.val()
     if snapshot.val() != null
-      database.ref(studentNumber + '/Paid').once('value').then((snapshot) ->
+      studentPaid.once('value').then((snapshot) ->
         if snapshot.val() == 'yes'
           date = new Date()
           dateTime = {}
           dateTime[studentNumber + '/Attendence/' + date.toDateString()] = date.toLocaleTimeString()
-          database.ref().update(dateTime)
+          studentDatabase.update(dateTime)
         else if snapshot.val() == 'no'
-          database.ref(studentNumber + '/FreeUses').once('value').then((snapshot) ->
+          studentFreeUses.once('value').then((snapshot) ->
             if snapshot.val() < 2
               date = new Date()
               dateTime = {}
               dateTime[studentNumber + '/Attendence/' + date.toDateString()] = date.toLocaleTimeString()
-              database.ref().update(dateTime)
+              studentDatabase.update(dateTime)
             return
           )
-
         return
       )
     return
@@ -114,7 +123,9 @@ dateTime = (studentNumber) ->
       studentNumber = $('#checkStudentNumber').val()
       studentNumber = formatStudentNumber(studentNumber)
       checkPaid(studentNumber)
-      dateTime(studentNumber)
+      setTimeout(-> 
+        dateTime(studentNumber)
+      , 500)
       $('#checkStudentNumber').val('')
       return false
 
@@ -123,7 +134,7 @@ dateTime = (studentNumber) ->
       studentNumber = formatStudentNumber(studentNumber)
       password = $('#password').val()
       if password == 'Lagswitch1'
-        writeUser(studentNumber, 'yes', 0)
+        writeUser(studentNumber, 'yes', 0, true)
         $('#addStudentNumber').val('')
       else
         $('#wrongPassword').slideDown()
@@ -132,7 +143,6 @@ dateTime = (studentNumber) ->
         , 3000)
       $('#password').val('')
       return false
-
     return
   return
 ) jQuery
