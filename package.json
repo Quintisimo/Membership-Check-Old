@@ -2,20 +2,19 @@
   "name": "Membership-Check",
   "description": "A website to check if people are a member of QUT eSports",
   "scripts": {
-    "start": "cross-env NODE_ENV=development roots watch"
+    "start": "roots watch"
   },
   "dependencies": {
-    "autoprefixer-stylus": "0.9.x",
-    "axis": "0.6.x",
+    "autoprefixer-stylus": "0.14.x",
+    "axis": "1.0.x",
     "coffee-script": "1.x",
-    "cross-env": "^5.0.5",
     "css-pipeline": "0.3.x",
     "js-pipeline": "0.2.x",
-    "jstransformer-marked": "1.x",
-    "marked": "0.3.x",
-    "pug": "^2.0.0-rc.3",
+    "jstransformer-marked": "^1.0.3",
+    "marked": "^0.3.12",
+    "pug": "^2.0.0-rc.4",
     "roots": "^5.2.0",
-    "rupture": "0.6.x",
+    "rupture": "0.7.x",
     "stylus": "0.54.x"
   }
 }
